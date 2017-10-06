@@ -60,8 +60,9 @@ void PrintBoard(int matrixBoard[][8])
 		}
 		printf("|\n---------------------------------------------\n");
 	}
-	printf(ANSI_COLOR_RED"player 1: [%d]"ANSI_COLOR_RESET"\n", score1);
-	printf(ANSI_COLOR_GREEN"player 2: [%d]"ANSI_COLOR_RESET"\n", score2);
+	printf("\t\t\t\t"ANSI_COLOR_RED"player 1: [%d]"ANSI_COLOR_RESET"\n", score1);
+	printf("\t\t\t\t"ANSI_COLOR_GREEN"player 2: [%d]"ANSI_COLOR_RESET"\n", score2);
+	//printf(ANSI_COLOR_RED"%c"ANSI_COLOR_RESET"\n", (char)178); => idea for future changing tiles look
 }
 
 #pragma endregion
@@ -87,22 +88,21 @@ int CheckNW(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 		indexi--;
 		indexj--;
 
+		//if we've reached an empty tile
 		if (board[indexi][indexj] == 0)
 		{
 			fl = 0;
 		}
 		//if we've reached our own tile again, then increment closure
-		//to inform that we've ended a sequence, starting at our tile and also ending
+		//to inform that we've ended a sequence, starting at our tile and also ending.
 		//worth mentioning that only if 'closure' is true, and 'count' (which represents
 		//how many times we've met the other player's tiles) is true, then it means we've
 		//reached a real sequence
 		else if (board[indexi][indexj] == turn)
 		{
-			if (count > 0)
-			{
 				closure++;
 				fl = 0;
-			}
+			
 		}
 		//if we're out of array bounds
 		else if (indexi < 0)
@@ -148,21 +148,15 @@ int CheckNE(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 		indexi--;
 		indexj++;
 
+		//if we've reached an empty tile
 		if (board[indexi][indexj] == 0)
 		{
-			//Only if it's not the first round, then end the loop
-			if (i > 0)
-			{
-				fl = 0;
-			}
+			fl = 0;
 		}
 		else if (board[indexi][indexj] == turn)
 		{
-			if (count > 0)
-			{
-				closure++;
-				fl = 0;
-			}
+			closure++;
+			fl = 0;
 		}
 		else if (indexj > 7 || indexi < 0)
 		{
@@ -206,19 +200,12 @@ int CheckNorth(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 
 		if (board[indexi][indexj] == 0)
 		{
-			//Only if it's not the first round, then end the loop
-			if (i > 0)
-			{
-				fl = 0;
-			}
+			fl = 0;
 		}
 		else if (board[indexi][indexj] == turn)
 		{
-			if (count > 0)
-			{
-				closure++;
-				fl = 0;
-			}
+			closure++;
+			fl = 0;
 		}
 		else if (indexi < 0)
 		{
@@ -264,19 +251,12 @@ int CheckEast(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 
 		if (board[indexi][indexj] == 0)
 		{
-			//Only if it's not the first round, then end the loop
-			if (i > 0)
-			{
-				fl = 0;
-			}
+			fl = 0;
 		}
 		else if (board[indexi][indexj] == turn)
 		{
-			if (count > 0)
-			{
-				closure++;
-				fl = 0;
-			}
+			closure++;
+			fl = 0;
 		}
 		else if (indexj > 7)
 		{
@@ -284,19 +264,9 @@ int CheckEast(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 		}
 		else if (board[indexi][indexj] == 3 - turn)
 		{
-			//if (board[indexi][indexj - 1] != 0)
-			//{
-			//	count++;
-			//}
-			//else
-			//{
-			//	fl = 0;
-			//}
 			count++;
-			
 		}
 		i++;
-
 	}
 
 	if (count > 0 && closure > 0)
@@ -330,19 +300,12 @@ int CheckSE(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 
 		if (board[indexi][indexj] == 0)
 		{
-			//Only if it's not the first round, then end the loop
-			if (i > 0)
-			{
 				fl = 0;
-			}
 		}
 		else if (board[indexi][indexj] == turn)
 		{
-			if (count > 0)
-			{
-				closure++;
-				fl = 0;
-			}
+			closure++;
+			fl = 0;
 		}
 		else if (indexj > 7 || indexi > 7)
 		{
@@ -386,19 +349,12 @@ int CheckSouth(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 
 		if (board[indexi][indexj] == 0)
 		{
-			//Only if it's not the first round, then end the loop
-			if (i > 0)
-			{
-				fl = 0;
-			}
+			fl = 0;
 		}
 		else if (board[indexi][indexj] == turn)
 		{
-			if (count > 0)
-			{
-				closure++;
-				fl = 0;
-			}
+			closure++;
+			fl = 0;
 		}
 		else if (indexi > 7)
 		{
@@ -409,7 +365,6 @@ int CheckSouth(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 			count++;
 		}
 		i++;
-
 	}
 
 	if (count > 0 && closure > 0)
@@ -444,19 +399,12 @@ int CheckSW(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 
 		if (board[indexi][indexj] == 0)
 		{
-			//Only if it's not the first round, then end the loop
-			if (i > 0)
-			{
-				fl = 0;
-			}
+			fl = 0;
 		}
 		else if (board[indexi][indexj] == turn)
 		{
-			if (count > 0)
-			{
-				closure++;
-				fl = 0;
-			}
+			closure++;
+			fl = 0;
 		}
 		else if (indexi > 7 || indexj < 0)
 		{
@@ -467,7 +415,6 @@ int CheckSW(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 			count++;
 		}
 		i++;
-
 	}
 
 	if (count > 0 && closure > 0)
@@ -500,20 +447,12 @@ int CheckWest(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 
 		if (board[indexi][indexj] == 0)
 		{
-			//Only if it's not the first round, then end the loop
-			/*	if (i > 0)
-			{
-			fl = 0;
-			}*/
 			fl = 0;
 		}
-		else if (board[indexi][indexj] == turn && board[indexi][indexj + 1] != 0)
+		else if (board[indexi][indexj] == turn)// && board[indexi][indexj + 1] != 0)
 		{
-			if (count > 0)
-			{
-				closure++;
-				fl = 0;
-			}
+			closure++;
+			fl = 0;
 		}
 		else if (indexj < 0)
 		{
@@ -524,7 +463,6 @@ int CheckWest(int board[8][8], int indexi, int indexj, int turn, int isTicked)
 			count++;
 		}
 		i++;
-
 	}
 
 	if (count > 0 && closure > 0)
@@ -720,11 +658,11 @@ void BeginGame(int gameBoard[8][8])
 		{
 			if (turn == 1)
 			{
-				printf("It's player "ANSI_COLOR_RED"%d"ANSI_COLOR_RESET"'s turn!\n", turn);
+				printf(ANSI_COLOR_RED"It's player "ANSI_COLOR_RED"%d"ANSI_COLOR_RESET"'s turn!\n", turn);
 			}
 			else if (turn == 2)
 			{
-				printf("It's player "ANSI_COLOR_GREEN"%d"ANSI_COLOR_RESET"'s turn!\n", turn);
+				printf(ANSI_COLOR_GREEN"It's player "ANSI_COLOR_GREEN"%d"ANSI_COLOR_RESET"'s turn!\n", turn);
 			}
 			//printf("It's player %d's turn!\n", turn);
 			printf("Enter a location, separated by a space:\n");
