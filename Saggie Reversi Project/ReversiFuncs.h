@@ -9,16 +9,23 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-
+typedef struct Results
+{
+	int playerOneScore;
+	int PlayerTwoScore;
+}GameResults;
 static int playerOneCount = 0;
 static int playerTwoCount = 0;
+
+static GameResults gameResults;
+static GameResults* ptr = &gameResults;
 
 #pragma region Printing The Board
 
 void PrintBoard(int matrixBoard[][8], int IsPlayerSkipped)
 {
 	system("cls");
-
+	
 	//Dummy 0'ed matrix (8x8)
 	//int gameBoard[][8] = {
 	//	{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -42,10 +49,7 @@ void PrintBoard(int matrixBoard[][8], int IsPlayerSkipped)
 		for (int j = 0; j < 8; j++)
 		{
 			tmp = matrixBoard[i][j];
-			//if (tmp == 1)
-			//{
-			//	printf("");
-			//}
+
 			if (tmp == 1)
 			{
 				score1++;
@@ -64,10 +68,12 @@ void PrintBoard(int matrixBoard[][8], int IsPlayerSkipped)
 		}
 		printf("|\n---------------------------------------------\n");
 	}
+	ptr->playerOneScore = score1;
+	ptr->PlayerTwoScore = score2;
 	printf("\t\t\t\t"ANSI_COLOR_RED"player 1: [%d]"ANSI_COLOR_RESET"\n", score1);
 	printf("\t\t\t\t"ANSI_COLOR_GREEN"player 2: [%d]"ANSI_COLOR_RESET"\n", score2);
 	//printf(ANSI_COLOR_RED"%c"ANSI_COLOR_RESET"\n", (char)178); => idea for future changing tiles look
-
+	
 	if (IsPlayerSkipped == 1)
 	{
 		printf("Player 1 was skipped due to no available moves...\n");
@@ -578,6 +584,7 @@ void ChangeWest(int board[8][8], int i, int j, int turn, int count)
 }
 #pragma endregion
 
+#pragma region Checking all the 0 tiles every round
 //Checking each round whether there are moves left for either players
 void CheckAllTiles(int gameBoard[8][8])
 {
@@ -602,7 +609,7 @@ void CheckAllTiles(int gameBoard[8][8])
 					if (nw > 0)
 					{
 						playerOneCount += nw;
-						
+
 					}
 					else
 					{
@@ -610,7 +617,7 @@ void CheckAllTiles(int gameBoard[8][8])
 						if (ne > 0)
 						{
 							playerOneCount += ne;
-							
+
 						}
 						else
 						{
@@ -618,7 +625,7 @@ void CheckAllTiles(int gameBoard[8][8])
 							if (north > 0)
 							{
 								playerOneCount += north;
-								
+
 							}
 							else
 							{
@@ -626,7 +633,7 @@ void CheckAllTiles(int gameBoard[8][8])
 								if (east > 0)
 								{
 									playerOneCount += east;
-									
+
 								}
 								else
 								{
@@ -634,7 +641,7 @@ void CheckAllTiles(int gameBoard[8][8])
 									if (se > 0)
 									{
 										playerOneCount += se;
-										
+
 									}
 									else
 									{
@@ -642,7 +649,7 @@ void CheckAllTiles(int gameBoard[8][8])
 										if (south > 0)
 										{
 											playerOneCount += south;
-											
+
 										}
 										else
 										{
@@ -650,7 +657,7 @@ void CheckAllTiles(int gameBoard[8][8])
 											if (sw > 0)
 											{
 												playerOneCount += sw;
-												
+
 											}
 											else
 											{
@@ -658,7 +665,7 @@ void CheckAllTiles(int gameBoard[8][8])
 												if (west > 0)
 												{
 													playerOneCount += west;
-													
+
 												}
 											}
 										}
@@ -677,8 +684,8 @@ void CheckAllTiles(int gameBoard[8][8])
 					nw = CheckNW(gameBoard, indexI, indexJ, turn, 0);
 					if (nw > 0)
 					{
-						playerTwoCount+= nw;
-						
+						playerTwoCount += nw;
+
 					}
 					else
 					{
@@ -686,7 +693,7 @@ void CheckAllTiles(int gameBoard[8][8])
 						if (ne > 0)
 						{
 							playerTwoCount += ne;
-							
+
 						}
 						else
 						{
@@ -694,7 +701,7 @@ void CheckAllTiles(int gameBoard[8][8])
 							if (north > 0)
 							{
 								playerTwoCount += north;
-								
+
 							}
 							else
 							{
@@ -702,7 +709,7 @@ void CheckAllTiles(int gameBoard[8][8])
 								if (east > 0)
 								{
 									playerTwoCount += east;
-									
+
 								}
 								else
 								{
@@ -710,7 +717,7 @@ void CheckAllTiles(int gameBoard[8][8])
 									if (se > 0)
 									{
 										playerTwoCount += se;
-										
+
 									}
 									else
 									{
@@ -718,7 +725,7 @@ void CheckAllTiles(int gameBoard[8][8])
 										if (south > 0)
 										{
 											playerTwoCount += south;
-											
+
 										}
 										else
 										{
@@ -726,7 +733,7 @@ void CheckAllTiles(int gameBoard[8][8])
 											if (sw > 0)
 											{
 												playerTwoCount += sw;
-												
+
 											}
 											else
 											{
@@ -734,7 +741,7 @@ void CheckAllTiles(int gameBoard[8][8])
 												if (west > 0)
 												{
 													playerTwoCount += west;
-													
+
 												}
 											}
 										}
@@ -754,20 +761,31 @@ void CheckAllTiles(int gameBoard[8][8])
 		}
 	}
 }
+#pragma endregion
+
+
 
 void BeginGame(int gameBoard[8][8], int playerSkipNumber)
 {
-	int turn = 1, indexI = 0, indexJ = 0, fl = 1;
-	int nw, north, ne, east = 0, se, south, sw, west;
+	int turn = 1, indexI = 0, indexJ = 0, fl = 1, winner = 0;
+
+	//from left to right: 
+	//North West
+	//Nort
+	//North East
+	//East
+	//South East
+	//South
+	//South West
+	//West
+	int nw = 0, north = 0, ne = 0, east = 0, se = 0, south = 0, sw = 0, west = 0;
 
 
 	PrintBoard(gameBoard, 0);
 
-	while (fl != 3)
+	while (fl < 3)
 	{
 		fl = 1;
-
-
 
 		while (fl == 1)
 		{
@@ -782,121 +800,161 @@ void BeginGame(int gameBoard[8][8], int playerSkipNumber)
 			printf("Enter a location, separated by a space:\n");
 			scanf("%d %d", &indexI, &indexJ);
 
-
-
 			indexI -= 1;
 			indexJ -= 1;
 
-			nw = CheckNW(gameBoard, indexI, indexJ, turn, 0);
-			ne = CheckNE(gameBoard, indexI, indexJ, turn, 0);
-			north = CheckNorth(gameBoard, indexI, indexJ, turn, 0);
-			east = CheckEast(gameBoard, indexI, indexJ, turn, 0);
-			se = CheckSE(gameBoard, indexI, indexJ, turn, 0);
-			south = CheckSouth(gameBoard, indexI, indexJ, turn, 0);
-			sw = CheckSW(gameBoard, indexI, indexJ, turn, 0);
-			west = CheckWest(gameBoard, indexI, indexJ, turn, 0);
-
-			if (indexI > 7 || indexJ > 7 || indexI < 0 || indexJ < 0)
+			//-1000 for stopping because we decrement 1
+			if (indexI == -1000)
+			{
+				fl = 3;
+				printf("Quitting game...\n");
+			}
+			else if (indexI > 7 || indexJ > 7 || indexI < 0 || indexJ < 0)
 			{
 				printf("Invalid Values\n");
 			}
-			else if (gameBoard[indexI][indexJ] == 0)
+			else
 			{
-				if (nw > 0)
-				{
-					ChangeNW(gameBoard, indexI, indexJ, turn, nw);
-					fl = 0;
-				}
-				if (ne > 0)
-				{
-					ChangeNE(gameBoard, indexI, indexJ, turn, ne);
-					fl = 0;
-				}
-				 if (north > 0)
-				{
-					 ChangeNorth(gameBoard, indexI, indexJ, turn, north);
+				nw = CheckNW(gameBoard, indexI, indexJ, turn, 0);
+				ne = CheckNE(gameBoard, indexI, indexJ, turn, 0);
+				north = CheckNorth(gameBoard, indexI, indexJ, turn, 0);
+				east = CheckEast(gameBoard, indexI, indexJ, turn, 0);
+				se = CheckSE(gameBoard, indexI, indexJ, turn, 0);
+				south = CheckSouth(gameBoard, indexI, indexJ, turn, 0);
+				sw = CheckSW(gameBoard, indexI, indexJ, turn, 0);
+				west = CheckWest(gameBoard, indexI, indexJ, turn, 0);
 
-					fl = 0;
-				}
-				 if (east > 0)
-				{
-					 ChangeEast(gameBoard, indexI, indexJ, turn, east);
-					fl = 0;
-				}
-				 if (se > 0)
-				{
-					 ChangeSE(gameBoard, indexI, indexJ, turn, se);
-					fl = 0;
-				}
-				 if (south > 0)
-				{
-					 ChangeSouth(gameBoard, indexI, indexJ, turn, south);
 
-					fl = 0;
-				}
-				 if (sw > 0)
+				if (gameBoard[indexI][indexJ] == 0)
 				{
-					 ChangeSW(gameBoard, indexI, indexJ, turn, sw);
+					if (nw > 0)
+					{
+						ChangeNW(gameBoard, indexI, indexJ, turn, nw);
+						fl = 0;
+					}
+					if (ne > 0)
+					{
+						ChangeNE(gameBoard, indexI, indexJ, turn, ne);
+						fl = 0;
+					}
+					if (north > 0)
+					{
+						ChangeNorth(gameBoard, indexI, indexJ, turn, north);
 
-					fl = 0;
-				}
-				 if (west > 0)
-				{
-					 ChangeWest(gameBoard, indexI, indexJ, turn, west);
+						fl = 0;
+					}
+					if (east > 0)
+					{
+						ChangeEast(gameBoard, indexI, indexJ, turn, east);
+						fl = 0;
+					}
+					if (se > 0)
+					{
+						ChangeSE(gameBoard, indexI, indexJ, turn, se);
+						fl = 0;
+					}
+					if (south > 0)
+					{
+						ChangeSouth(gameBoard, indexI, indexJ, turn, south);
 
-					fl = 0;
+						fl = 0;
+					}
+					if (sw > 0)
+					{
+						ChangeSW(gameBoard, indexI, indexJ, turn, sw);
+
+						fl = 0;
+					}
+					if (west > 0)
+					{
+						ChangeWest(gameBoard, indexI, indexJ, turn, west);
+
+						fl = 0;
+					}
+					else
+					{
+						printf("Taking over [%d, %d] will NOT conquer anything !\n", indexI + 1, indexJ + 1);
+					}
 				}
-				else
+				else if (gameBoard[indexI][indexJ] == (3 - turn))
 				{
-					printf("Taking over [%d, %d] will NOT conquer anything !\n", indexI + 1, indexJ + 1);
+					printf("[%d], [%d] is already occupied by player %d !\n", indexI + 1, indexJ + 1, 3 - turn);
+				}
+				else if (gameBoard[indexI][indexJ] == turn)
+				{
+					printf("You've already conquered [%d][%d] !\n", indexI + 1, indexJ + 1);
 				}
 			}
-			else if (gameBoard[indexI][indexJ] == (3 - turn))
+		}
+
+		if (fl < 3)
+		{
+			//if we got here, it means that we've successfuly conquered tile(s)
+			//thus we assign the starting input tile our turn's value
+			gameBoard[indexI][indexJ] = turn;
+
+			//Blank the counters for the next round's check
+			playerOneCount = 0;
+			playerTwoCount = 0;
+
+			CheckAllTiles(gameBoard);
+
+			//if no more moves for both players, then quit the game
+			if (playerOneCount == 0 && playerTwoCount == 0)
 			{
-				printf("[%d], [%d] is already occupied by player %d !\n", indexI + 1, indexJ + 1, 3 - turn);
+				fl = 4;
 			}
-			else if (gameBoard[indexI][indexJ] == turn)
+			//if only player 1 is out of moves and this is player two's turn
+			//then skip player 1's turn
+			else if (playerOneCount == 0 && turn == 2)
 			{
-				printf("You've already conquered [%d][%d] !\n", indexI + 1, indexJ + 1);
+				playerSkipNumber = 1;
+				fl = 0;
 			}
+			//if only player two is out of moves and it's player 1's turn
+			//then skip player 2's turn
+			else if (playerTwoCount == 0 && turn == 1)
+			{
+				playerSkipNumber = 2;
+				fl = 0;
+			}
+			//if both players have moves left, then continue as usual
+			else
+			{
+				turn = 3 - turn;
+			}
+
+			PrintBoard(gameBoard, playerSkipNumber);
+
 		}
-		gameBoard[indexI][indexJ] = turn;
-
-
-		playerOneCount = 0;
-		playerTwoCount = 0;
-
-		CheckAllTiles(gameBoard);
-
-
-		if (playerOneCount == 0 && playerTwoCount == 0)
-		{
-			//printf("No more Moves for both players !\n");
-			fl = 3;
-		}
-		else if (playerOneCount == 0 && turn == 2)
-		{
-			playerSkipNumber = 1;
-			fl = 0;
-		}
-		else if (playerTwoCount == 0 && turn == 1)
-		{
-			playerSkipNumber = 2;
-			fl = 0;
-		}
-		else
-		{
-			turn = 3 - turn;
-		}
-
-		PrintBoard(gameBoard, playerSkipNumber);
-
-
 	}
-	//Announcing game over
-	printf("No more Moves for both players !\n");
 
+	printf("Game Over !\n");
+	if (fl == 4)
+	{
+		printf("No more moves for both players.\n");
+	}
+
+	printf("Results:\n\n");
+	//1 = player 1
+	//2 = player 2
+	//3 = a tie
+	winner = (ptr->playerOneScore > ptr->PlayerTwoScore ? 1 : ptr->playerOneScore == ptr->PlayerTwoScore ? 3 : 2);
+
+	switch (winner)
+	{
+	case 1:
+		printf("#1: "ANSI_COLOR_RED"Player 1, score: %d"ANSI_COLOR_RESET"\n", ptr->playerOneScore);
+		printf("#2: "ANSI_COLOR_GREEN"Player 2, score: %d"ANSI_COLOR_RESET"\n", ptr->PlayerTwoScore);
+		break;
+	case 2:
+		printf("#1: "ANSI_COLOR_GREEN"Player 2, score: %d"ANSI_COLOR_RESET"\n", ptr->PlayerTwoScore);
+		printf("#2: "ANSI_COLOR_RED"Player 1, score: %d"ANSI_COLOR_RESET"\n", ptr->playerOneScore);
+		break;
+	case 3:
+		printf(ANSI_COLOR_YELLOW"It's a tie, both players have reached a score of: %d"ANSI_COLOR_RESET"\n", ptr->playerOneScore);
+		break;
+	default:
+		break;
+	}
 }
-
-
-

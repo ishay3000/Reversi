@@ -75,6 +75,7 @@ int main()
 
 #pragma endregion
 
+	//Dummy gameboard with three 0's left
 	//int gameBoard[][8] = {
 	//		{ 1, 1, 1, 1, 1, 1, 1, 1 },
 	//		{ 1, 1, 1, 1, 1, 1, 1, 1 },
